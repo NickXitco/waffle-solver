@@ -1,0 +1,170 @@
+
+@font-face {
+    font-family: "Mori";
+    src: url("PPMori-Book.otf");
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Mori";
+    src: url("PPMori-ExtraBold.otf");
+    font-weight: bold;
+}
+
+
+.app {
+    background-color: #0b3123;
+    width: 100vw;
+    height: 100svh;
+    overflow: hidden auto;
+    color: white;
+    padding: 1rem 4rem;
+    font-family: Mori, sans-serif;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+.app_header {
+
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.wrapper {
+    display: flex;
+    gap: 4rem;
+}
+
+.grids {
+    display: inline-block;
+    margin: 2rem 0;
+}
+
+.input_grid {
+    display: inline-grid;
+
+    grid-template-columns: repeat(5, 4rem);
+    grid-template-rows: repeat(5, 4rem);
+    gap: 1rem;
+}
+
+.input_wrapper {
+    position: relative;
+}
+
+.index {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 0.75rem;
+    color: black;
+    font-weight: normal;
+    z-index: 1;
+}
+
+.words {
+    display: inline-block;
+}
+
+.words_list {
+    list-style: none;
+    padding: 0;
+
+    display: inline-flex;
+    flex-wrap: wrap;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4rem;
+    margin: 0;
+}
+
+.letter_chiclet {
+    position: relative;
+    box-shadow: inset rgba(0, 0, 0, 0.1) 0 -5px 0 0;
+    font-size: 2.5rem;
+    text-align: center;
+    text-transform: uppercase;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    background: #edeff1;
+
+    color: black;
+
+    border: none;
+    outline: none;
+    padding: 0.5rem;
+
+    width: 4rem;
+    height: 4rem;
+
+    border-radius: 12%;
+}
+
+.word {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    max-width: calc(4rem * 5 + 0.5rem * 4);
+}
+
+.word_container {
+    width: 25rem;
+}
+
+.pool_analysis {
+    margin: 0.375rem 0;
+    > * {
+        display: inline-block;
+    }
+
+    p {
+        font-weight: bold;
+        margin: 0;
+        margin-right: 0.5ch;
+        margin-bottom: 0.5ch;
+
+    }
+}
+
+.word_pool {
+    list-style: none;
+    padding: 0;
+    display: inline-flex;
+    gap: 0.5ch;
+    text-transform: uppercase;
+
+    sup {
+        color: white;
+    }
+}
+
+.actualized_list {
+    list-style: none;
+    padding: 0;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 1.5ch;
+
+    max-width: 30rem;
+
+    button {
+        background: none;
+        font: inherit;
+        text-transform: uppercase;
+        color: white;
+        cursor: pointer;
+        border: none;
+        box-shadow: inset white 0 0 0 1px;
+
+        &:hover,
+        &:focus-visible {
+            box-shadow: inset white 0 0 0 20px;
+            color: black;
+        }
+    }
+}
