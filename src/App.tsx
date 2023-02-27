@@ -1,9 +1,10 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import styles from './app.module.scss'
 import { Letter, LetterState, Mode } from './types'
-import { testGames } from './constants'
 import { Word } from './Word'
 import { WaffleLetter, WaffleSpacer } from './WaffleComponents'
+import { wordMappings } from './constants'
+
 const getLettersFromGameString = (s: string) => {
 	const letters: Letter[] = []
 	for (let i = 0; i < s.length; i += 2) {
@@ -16,9 +17,87 @@ const getLettersFromGameString = (s: string) => {
 	return letters
 }
 
+const getEmptyBoard = () => {
+	const letters: Letter[] = []
+	for (let i = 0; i < 21; i++) {
+		letters.push({
+			letter: ' ',
+			index: i,
+			state: LetterState.GREY,
+		})
+	}
+	return letters
+}
+
+function decodeUTF16LE(encodedString: string) {
+	var decodedString = ''
+	for (var i = 0; i < encodedString.length; i += 2) {
+		var charCode = encodedString.charCodeAt(i) | (encodedString.charCodeAt(i + 1) << 8)
+		decodedString += String.fromCharCode(charCode)
+	}
+	return decodedString
+}
+
+const getLettersFromWaffleSite = async () => {
+	const url = 'https://corsproxy.io/?' + encodeURIComponent('https://wafflegame.net/daily1.txt')
+
+	const data = await fetch(url).then((res) => res.text())
+
+	// Decode base64 string to binary data
+	const binaryData = window.atob(data)
+
+	// Convert binary data to UTF-16 string
+	let utf16String = ''
+	for (let i = 0; i < binaryData.length; i += 2) {
+		utf16String += String.fromCharCode(binaryData.charCodeAt(i) | (binaryData.charCodeAt(i + 1) << 8))
+	}
+
+	// Convert UTF-16 string to regular JavaScript string
+	const puzzleSetup = JSON.parse(utf16String.replace(/^\uFEFF/, ''))
+	const puzzleBoard = puzzleSetup.puzzle.toLowerCase()
+	const solution = puzzleSetup.solution.toLowerCase()
+	console.log(puzzleSetup)
+
+	const letters: Letter[] = []
+	for (let i = 0; i < puzzleBoard.length; i++) {
+		letters.push({
+			letter: puzzleBoard[i],
+			index: i,
+			state: solution[i] === puzzleBoard[i] ? LetterState.GREEN : LetterState.GREY,
+		})
+	}
+
+	/*
+	TODO this is incomplete and doesn't consider multiple of the same letter in one word, or crossing yellows. It's complicated
+	 */
+	for (let i = 0; i < wordMappings.length; i++) {
+		const wordMapping = wordMappings[i]
+		const solution: string = puzzleSetup.words[i].toLowerCase()
+
+		for (let j = 0; j < wordMapping.length; j++) {
+			const letter = letters[wordMapping[j]]
+			if (solution.includes(letter.letter) && solution[j] !== letter.letter) {
+				letter.state = LetterState.YELLOW
+			}
+		}
+	}
+
+	return letters
+}
+
 const App = () => {
-	const [letters, setLetters] = useState(getLettersFromGameString(testGames[3]))
+	const [fetched, setFetched] = useState(false)
+	const [letters, setLetters] = useState(getEmptyBoard())
 	const [mode, setMode] = useState(Mode.INPUT)
+
+	useEffect(() => {
+		if (!fetched) {
+			getLettersFromWaffleSite().then((r) => {
+				setLetters(r)
+				setFetched(true)
+			})
+		}
+	})
 
 	const updateLetter = (index: number, newLetter: string) => {
 		const nextLetters = letters.map((l, i) => {
